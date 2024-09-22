@@ -70,35 +70,37 @@ then
 else
     echo_with_emoji "✅" "Powerlevel10k ya está instalado en ~/.config/p10k"
 fi
-
 # Plugins para Oh My Zsh
 PLUGINS_DIR=${ZSH_CUSTOM:-$HOME/.oh-my-zsh}/plugins
 
-declare -A plugins=(
-    ["zsh-syntax-highlighting"]="https://github.com/zsh-users/zsh-syntax-highlighting"
-    ["zsh-autosuggestions"]="https://github.com/zsh-users/zsh-autosuggestions"
+# Instalar plugins si no están instalados
+plugins=(
+    "zsh-users/zsh-syntax-highlighting"
+    "zsh-users/zsh-autosuggestions"
 )
 
-# Instalar plugins con git clone y añadir al archivo .zshrc si no está ya allí
-for plugin_info in "${plugins[@]}"; do
-    plugin_name=$(echo $plugin_info | awk '{print $1}')
-    plugin_url=$(echo $plugin_info | awk '{print $2}')
-    
-    if [ ! -d "$PLUGINS_DIR/$plugin_name" ]
-    then
-        echo_with_emoji "🔌" "Instalando plugin $plugin_name..."
-        git clone $plugin_url $PLUGINS_DIR/$plugin_name
+for plugin in "${plugins[@]}"; do
+    plugin_name=$(basename "$plugin")
+    if [ ! -d "$PLUGINS_DIR/$plugin_name" ]; then
+        echo_with_emoji "🔌" "Instalando el plugin $plugin_name..."
+        git clone "https://github.com/$plugin.git" "$PLUGINS_DIR/$plugin_name"
     else
-        echo_with_emoji "✅" "Plugin $plugin_name ya está instalado"
+        echo_with_emoji "✅" "El plugin $plugin_name ya está instalado"
     fi
+done
 
-    # Añadir el plugin al archivo .zshrc si no está presente
+# Añadir los plugins al archivo .zshrc
+if ! grep -q "plugins=(" ~/.zshrc; then
+    echo "plugins=(" >> ~/.zshrc
+fi
+
+for plugin in "${plugins[@]}"; do
+    plugin_name=$(basename "$plugin")
     if ! grep -q "$plugin_name" ~/.zshrc; then
-        echo_with_emoji "🛠️" "Añadiendo $plugin_name al archivo .zshrc..."
-        sed -i '' "/^plugins=/ s/)/ $plugin_name)/" ~/.zshrc
-    else
-        echo_with_emoji "✅" "El plugin $plugin_name ya está en el archivo .zshrc"
+        echo "Añadiendo $plugin_name al archivo .zshrc..."
+        sed -i '' "s/^plugins=(/& $plugin_name/" ~/.zshrc
     fi
+done
 
 # Instalar lsd
 if ! command -v lsd &> /dev/null
@@ -129,10 +131,7 @@ if ! grep -q "alias cat='bat'" ~/.zshrc; then
     echo "alias cat='bat'" >> ~/.zshrc
 fi
 
-
-
 # Aplicar cambios
 echo_with_emoji "⚙️" "Aplicando cambios..."
 source ~/.zshrc
-
 echo_with_emoji "🎉" "Instalación completada. Por favor, reinicia tu terminal."
