@@ -80,23 +80,25 @@ declare -A plugins=(
 )
 
 # Instalar plugins con git clone y añadir al archivo .zshrc si no está ya allí
-for plugin in "${!plugins[@]}"; do
-    if [ ! -d "$PLUGINS_DIR/$plugin" ]
+for plugin_info in "${plugins[@]}"; do
+    plugin_name=$(echo $plugin_info | awk '{print $1}')
+    plugin_url=$(echo $plugin_info | awk '{print $2}')
+    
+    if [ ! -d "$PLUGINS_DIR/$plugin_name" ]
     then
-        echo_with_emoji "🔌" "Instalando plugin $plugin..."
-        git clone ${plugins[$plugin]} $PLUGINS_DIR/$plugin
+        echo_with_emoji "🔌" "Instalando plugin $plugin_name..."
+        git clone $plugin_url $PLUGINS_DIR/$plugin_name
     else
-        echo_with_emoji "✅" "Plugin $plugin ya está instalado"
+        echo_with_emoji "✅" "Plugin $plugin_name ya está instalado"
     fi
 
     # Añadir el plugin al archivo .zshrc si no está presente
-    if ! grep -q "$plugin" ~/.zshrc; then
-        echo_with_emoji "🛠️" "Añadiendo $plugin al archivo .zshrc..."
-        sed -i '' "/^plugins=/ s/)/ $plugin)/" ~/.zshrc
+    if ! grep -q "$plugin_name" ~/.zshrc; then
+        echo_with_emoji "🛠️" "Añadiendo $plugin_name al archivo .zshrc..."
+        sed -i '' "/^plugins=/ s/)/ $plugin_name)/" ~/.zshrc
     else
-        echo_with_emoji "✅" "El plugin $plugin ya está en el archivo .zshrc"
+        echo_with_emoji "✅" "El plugin $plugin_name ya está en el archivo .zshrc"
     fi
-done
 
 # Instalar lsd
 if ! command -v lsd &> /dev/null
