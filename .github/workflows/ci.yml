@@ -10,11 +10,30 @@ on:
   workflow_dispatch: # Permite ejecutar manualmente el workflow desde la interfaz de GitHub
 
 jobs:
-  test-script:
+  test-on-macos:
     runs-on: macos-latest
+
     steps:
+      # Paso 1: Clonar el repositorio
       - name: Checkout code
-        uses: actions/checkout@v2
-        
-      - name: Run installation script
+        uses: actions/checkout@v3
+
+      # Paso 2: Dar permisos de ejecución al script
+      - name: Set permissions for the install script
+        run: chmod +x ./install.sh
+
+      # Paso 3: Ejecutar el script de instalación
+      - name: Run the install script
         run: ./install.sh
+
+      # Paso 4: Listar los plugins instalados
+      - name: List Oh My Zsh plugins
+        run: ls ~/.oh-my-zsh/plugins
+
+      # Paso 5: Listar el directorio de configuración de Powerlevel10k
+      - name: List Powerlevel10k config directory
+        run: ls ~/.config/p10k
+
+      # Paso 6: Verificar el contenido del archivo .zshrc
+      - name: Show .zshrc content
+        run: cat ~/.zshrc
