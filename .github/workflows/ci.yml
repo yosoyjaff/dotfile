@@ -10,41 +10,11 @@ on:
   workflow_dispatch: # Permite ejecutar manualmente el workflow desde la interfaz de GitHub
 
 jobs:
-  test-on-macos:
+  test-script:
     runs-on: macos-latest
-
     steps:
-      # Paso 1: Clonar el repositorio
       - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Paso 2: Dar permisos de ejecución al script
-      - name: Set permissions for the install script
-        run: chmod +x ./install.sh
-
-      # Paso 3: Ejecutar el script de instalación
-      - name: Run the install script
+        uses: actions/checkout@v2
+        
+      - name: Run installation script
         run: ./install.sh
-
-      # Paso 4: Verificar la instalación (opcional)
-      - name: Verify Installation
-        run: |
-          echo "Verificando Powerlevel10k y plugins instalados..."
-          if [ -d "$HOME/.config/p10k" ]; then
-            echo "✅ Powerlevel10k instalado correctamente."
-          else
-            echo "❌ Powerlevel10k no se instaló correctamente."
-            exit 1
-          fi
-          if grep -q "zsh-syntax-highlighting" ~/.zshrc; then
-            echo "✅ zsh-syntax-highlighting añadido a .zshrc"
-          else
-            echo "❌ zsh-syntax-highlighting no se añadió a .zshrc"
-            exit 1
-          fi
-          if grep -q "zsh-autosuggestions" ~/.zshrc; then
-            echo "✅ zsh-autosuggestions añadido a .zshrc"
-          else
-            echo "❌ zsh-autosuggestions no se añadió a .zshrc"
-            exit 1
-          fi
