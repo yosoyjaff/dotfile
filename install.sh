@@ -52,6 +52,7 @@ if [ ! -d "$HOME/.oh-my-zsh" ]
 then
     echo_with_emoji "💻" "Instalando Oh My Zsh..."
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    
 else
     echo_with_emoji "✅" "Oh My Zsh ya está instalado"
 fi
@@ -74,8 +75,8 @@ fi
 PLUGINS_DIR=${ZSH_CUSTOM:-$HOME/.oh-my-zsh}/plugins
 
 declare -A plugins=(
-    ["zsh-syntax-highlighting"]="https://github.com/zsh-users/zsh-syntax-highlighting.git"
-    ["zsh-autosuggestions"]="https://github.com/zsh-users/zsh-autosuggestions.git"
+    ["zsh-syntax-highlighting"]="https://github.com/zsh-users/zsh-syntax-highlighting"
+    ["zsh-autosuggestions"]="https://github.com/zsh-users/zsh-autosuggestions"
 )
 
 # Instalar plugins con git clone y añadir al archivo .zshrc si no está ya allí
@@ -96,6 +97,37 @@ for plugin in "${!plugins[@]}"; do
         echo_with_emoji "✅" "El plugin $plugin ya está en el archivo .zshrc"
     fi
 done
+
+# Instalar lsd
+if ! command -v lsd &> /dev/null
+then
+    echo_with_emoji "🔍" "Instalando lsd..."
+    brew install lsd
+else
+    echo_with_emoji "✅" "lsd ya está instalado"
+fi
+
+# Instalar bat
+if ! command -v bat &> /dev/null
+then
+    echo_with_emoji "🐱" "Instalando bat..."
+    brew install bat
+else
+    echo_with_emoji "✅" "bat ya está instalado"
+fi
+
+# Añadir alias a .zshrc
+if ! grep -q "alias ls='lsd'" ~/.zshrc; then
+    echo_with_emoji "🔧" "Añadiendo alias para lsd..."
+    echo "alias ls='lsd'" >> ~/.zshrc
+fi
+
+if ! grep -q "alias cat='bat'" ~/.zshrc; then
+    echo_with_emoji "🔧" "Añadiendo alias para bat..."
+    echo "alias cat='bat'" >> ~/.zshrc
+fi
+
+
 
 # Aplicar cambios
 echo_with_emoji "⚙️" "Aplicando cambios..."
